@@ -12,7 +12,6 @@ function assert(condition, message) {
 }
 
 editor._format = function (cmd, val) {
-    console.log([cmd, val])
     document.execCommand(cmd, false, val || '');
 }
 
