@@ -1,0 +1,16 @@
+{
+  "name": "edit",
+  "version": "1.0.0",
+  "description": "",
+  "main": "editor.js",
+  "scripts": {
+    "build": "uglifyjs editor.js  -c -m -o editor.min.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "mkdirp": "^0.5.1",
+    "rimraf": "^2.5.2",
+    "uglify-js": "^2.6.2"
+  }
+}
