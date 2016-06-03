@@ -1,12 +1,13 @@
 import Base from './base'
 
-module.exports = (editor_element, caret_pos) => {
+module.exports = (editor_element, caret_pos, editor) => {
 
     let save_caret_pos = () => caret_pos.SaveCaretPos()
 
     window.addEventListener('load', function (e) {
         editor_element.innerHTML = null
         editor_element.focus()
+        editor.FormatBlock('p')
     })
 
     window.addEventListener('click', function () {

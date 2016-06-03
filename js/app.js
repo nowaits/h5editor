@@ -6,8 +6,8 @@ import PatchEvent from './patch_event'
 
 let editor_element = document.body
 let caret_pos = CaretPos(editor_element)
+let editor = Editor(editor_element, caret_pos)
 
+window.editor = editor
 
-window.editor = Editor(editor_element, caret_pos)
-
-PatchEvent(editor_element, caret_pos)
+PatchEvent(editor_element, caret_pos, editor)

@@ -5,7 +5,7 @@
 import Base from './base'
 
 class Editor {
-    constructor(editor_element, caret_pos) {       
+    constructor(editor_element, caret_pos) {
         this._editor_element = editor_element
         this._caret_pos = caret_pos
     }
@@ -24,6 +24,17 @@ class Editor {
 
     Bold() {
         return this._format('bold')
+    }
+
+    FormatBlock(val) {
+        /*
+        <div>
+        <h1> - <h6>
+        <p>
+        <form>
+        */
+        this.AssertNotNull(val)
+        return this._format('formatblock', val)
     }
 
     Italic() {
@@ -131,6 +142,12 @@ class Editor {
 
     RestoreCaretPos() {
         this._caret_pos.RestoreCaretPos()
+    }
+
+    LoadInlineCSS(css_content) {
+        var inline_css = document.createElement('style');
+        inline_css.innerText = css_content
+        document.getElementsByTagName("head")[0].appendChild(inline_css);
     }
 }
 
