@@ -73,12 +73,26 @@ editor.Forecolor = function (val) {
 
 editor.InsertLink = function (val) {
     assert(val, '数值不能为空')
-    return this._format('createlink', val)
+
+    var result = this._format('createlink', val)
+
+    if (result) {
+        window.location.hash = `insert-${val}-${Math.random()}`
+    }
+
+    return result
 }
 
 editor.InsertPicture = function (val) {
     assert(val, '数值不能为空')
-    return this._format('insertimage', val)
+
+    var result = this._format('insertimage', val)
+
+    if (result) {
+        window.location.hash = `insert-${val}-${Math.random()}`
+    }
+
+    return result
 }
 
 editor.Fontname = function (val) {
@@ -103,6 +117,10 @@ editor.Content = function () {
     return document.body.innerHTML
 }
 
+editor.SetContent = function (content) {
+    document.body.innerHTML = content
+}
+
 editor.SaveCaretPos = function () {
     saveRangePosition()
 }
@@ -112,8 +130,17 @@ editor.RestoreCaretPos = function () {
 }
 
 window.addEventListener('load', function (e) {
+    document.body.innerHTML = null
     document.body.focus()
 })
+
+window.addEventListener('click', function() { 
+    setTimeout(saveRangePosition, 100)
+});
+
+window.addEventListener('touchend', function() { 
+    setTimeout(saveRangePosition, 100)
+});
 
 window.addEventListener('keydown', function (e) {
 });
@@ -126,7 +153,7 @@ window.addEventListener('keyup', function (e) {
 
     console.log(window.location.hash)
 
-    saveRangePosition()
+    setTimeout(saveRangePosition, 100)
 })
 
 window.addEventListener('focus', function (e) {
@@ -134,17 +161,17 @@ window.addEventListener('focus', function (e) {
 })
 
 window.addEventListener('paste', function (e) {
-    
-    saveRangePosition()
-    
-    window.location.hash = `paste-${copiedData.type}-${Math.random()}`
+
+    setTimeout(saveRangePosition, 100)
 
     if (!e.clipboardData || !e.clipboardData.items || e.clipboardData.items.length <= 0) {
-        console.log(['--->>', e.clipboardData.types, e.clipboardData.files])
+        window.location.hash = `paste-unknow-${Math.random()}`
         return;
     }
 
     var copiedData = e.clipboardData.items[0];
+
+    window.location.hash = `paste-${copiedData.type}-${Math.random()}`
 
     if (copiedData.type.indexOf("image") == -1) {
         return;
