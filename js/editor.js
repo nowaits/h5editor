@@ -8,6 +8,7 @@ class Editor {
     constructor(editor_element, caret_pos) {
         this._editor_element = editor_element
         this._caret_pos = caret_pos
+        this._keyboard_height = 0
     }
 
     AssertNotNull(val) {
@@ -17,6 +18,10 @@ class Editor {
     _format(cmd, val) {
         return document.execCommand(cmd, false, val || '');
     }
+    
+    DomNode(){
+        return this._editor_element;
+    }
 
     Reformat() {
         return this._format('removeFormat')
@@ -24,6 +29,14 @@ class Editor {
 
     Bold() {
         return this._format('bold')
+    }
+    
+    KeyboardHeight() {
+        return this._keyboard_height
+    }
+    
+    SetKeyboardHeight(height) {
+        this._keyboard_height = height
     }
 
     FormatBlock(val) {
