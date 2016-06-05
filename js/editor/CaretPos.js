@@ -1,4 +1,4 @@
-import Base from './base'
+import {Base} from '../Base'
 
 class CaretPos {
     constructor(editor_element) {
@@ -15,6 +15,9 @@ class CaretPos {
     }
 
     SaveCaretPos() {
+        if(!window.getSelection().getRangeAt) {
+            return;
+        }
 
         var range = window.getSelection().getRangeAt(0);
         var sC = range.startContainer, eC = range.endContainer;
@@ -35,6 +38,12 @@ class CaretPos {
     }
 
     RestoreCaretPos() {
+        this._editor_element.focus();
+        
+        if(!window.getSelection().getRangeAt) {
+            return;
+        }
+        
         var sel = window.getSelection(), range = sel.getRangeAt(0);
         var x, C, sC = this._editor_element, eC = this._editor_element;
 

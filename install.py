@@ -15,7 +15,7 @@ def install_packages():
         "webpack", "webpack-dev-middleware", "webpack-hot-middleware", "expose-loader",
         "webpack-dev-server", "babel-core", "babel-loader", "babelify", "babel-runtime",
         "babel-preset-es2015", "babel-preset-es2017", "redux-logger", "rimraf", 
-        "mkdirp", "express", "babel-cli", "html-minifier", "fs"
+        "mkdirp", "express", "babel-cli", "html-minifier", "fs", "path"
     ]
 
     if os.system("npm i --save %s"%" ".join(dep)) != 0:

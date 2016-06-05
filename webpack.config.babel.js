@@ -1,21 +1,35 @@
 import webpack from 'webpack'
 import fs from 'fs'
+import path from 'path'
 import {
     minify as HtmlMinify
 } from 'html-minifier'
 
 let production = process.env.NODE_ENV === 'production'
 
+let js_dir = path.join(__dirname, 'js')
+
 let config = {
     devtool: !production ? 'inline-source-map' : false,
 
-    entry: {
-        editor: ['./js/app.js']
-    },
+    entry: fs.readdirSync(js_dir).reduce(function (entries, dir) {
+        
+        if (fs.statSync(path.join(js_dir, dir)).isDirectory()) {
+            var app_js = path.join(js_dir, dir, 'app.js')
+
+            if (fs.existsSync(app_js)) {
+
+                entries[dir] = [app_js]
+            }
+        }
+
+        return entries
+    }, {}),
 
     output: {
         path: __dirname + '/build',
         filename: '[name].js',
+        chunkFilename: '[id].chunk.js',
         publicPath: '/build/'
     },
 
@@ -28,6 +42,7 @@ let config = {
     },
 
     plugins: [
+        new webpack.optimize.CommonsChunkPlugin('shared.js'),
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
         }),
@@ -36,27 +51,42 @@ let config = {
         function () {
 
             this.plugin('done', stats => {
-                let file = 'editor.html'
-                fs.readFile(file, (err, data) => {
-                    var strings = data.toString().replace(/\[hash\]/g, `${stats.hash}`)
+                let files = ['editor.html', 'story.html']
 
-                    if (production) {
-                        strings = HtmlMinify(strings, {
-                            removeComments: true,
-                            collapseWhitespace: true,
-                            minifyJS: true,
-                            minifyCSS: true,
-                            removeAttributeQuotes: true,
-                            removeEmptyAttributes: true,
-                            removeRedundantAttributes: true,
-                            removeTagWhitespace: true
-                        })
+                function process_html(i) {
+                    if (i < 0 || i >= files.length) {
+                        return;
                     }
 
-                    fs.writeFile(`build/${file}`, strings, err => {
-                        !err && console.log(`Pack Finish: ${new Date().toTimeString()}`)
-                    })
-                });
+                    let file = files[i]
+
+                    fs.readFile(file, (err, data) => {
+                        var strings = data.toString().replace(/\[hash\]/g, `${stats.hash}`)
+
+                        if (production) {
+                            strings = HtmlMinify(strings, {
+                                removeComments: true,
+                                collapseWhitespace: true,
+                                minifyJS: true,
+                                minifyCSS: true,
+                                removeAttributeQuotes: true,
+                                removeEmptyAttributes: true,
+                                removeRedundantAttributes: true,
+                                removeTagWhitespace: true
+                            })
+                        }
+
+                        fs.writeFile(`build/${file}`, strings, err => {
+                            if (i + 1 == files.length) {
+                                !err && console.log(`Pack Finish: ${new Date().toTimeString()}`)
+                            } else {
+                                process_html(i + 1)
+                            }
+                        })
+                    });
+                }
+
+                process_html(0)
             })
         }
     ],

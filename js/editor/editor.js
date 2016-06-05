@@ -2,7 +2,7 @@
  * Created by dev on 2016/6/1.
  */
 
-import Base from './base'
+import {Base} from '../Base'
 
 class Editor {
     constructor(editor_element, caret_pos) {
@@ -16,10 +16,18 @@ class Editor {
     }
 
     _format(cmd, val) {
-        return document.execCommand(cmd, false, val || '');
+        this.BeforeEdit()
+        
+        let result = document.execCommand(cmd, false, val || '');
+        
+        if (result) {
+            this.EndEdit();
+        }
+        
+        return result
     }
-    
-    DomNode(){
+
+    DomNode() {
         return this._editor_element;
     }
 
@@ -30,11 +38,7 @@ class Editor {
     Bold() {
         return this._format('bold')
     }
-    
-    KeyboardHeight() {
-        return this._keyboard_height
-    }
-    
+
     SetKeyboardHeight(height) {
         this._keyboard_height = height
     }
@@ -123,13 +127,13 @@ class Editor {
 
     Fontname(val) {
         this.AssertNotNull(val)
-        
+
         return this._format('fontname', val)
     }
 
     Fontsize(val) {
         this.AssertNotNull(val)
-        
+
         return this._format('fontsize', val)
     }
 
@@ -161,6 +165,31 @@ class Editor {
         var inline_css = document.createElement('style');
         inline_css.innerText = css_content
         document.getElementsByTagName("head")[0].appendChild(inline_css);
+    }
+
+    BeforeEdit() {
+        this._editor_height = this._editor_element.offsetHeight
+    }
+
+    EndEdit() {
+        let window_height = window.innerHeight;
+        let edit_height = this._editor_element.offsetHeight
+
+        if (edit_height == this._editor_height) {
+            return;
+        }
+
+        Base.Print([`height grow by ${edit_height - this._editor_height}`,
+            `Window:${window_height} Editor:${edit_height} keyboard:${this._keyboard_height}`
+        ])
+
+        if (this._keyboard_height + edit_height > window_height) {
+            window.scrollTo(0, this._keyboard_height + edit_height - window_height)
+        } else {
+            window.scrollTo(0, 0)
+        }
+        
+        this._editor_height = edit_height
     }
 }
 
